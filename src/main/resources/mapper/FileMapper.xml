@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.upload.dao.FileMapper">
+  <resultMap id="BaseResultMap" type="com.example.demo.upload.entity.FileDTO">
+    <!--@mbg.generated-->
+    <!--@Table `fileDTO`-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="suffix" jdbcType="VARCHAR" property="suffix" />
+    <result column="size" jdbcType="INTEGER" property="size" />
+    <result column="created_at" jdbcType="BIGINT" property="createdAt" />
+    <result column="updated_at" jdbcType="BIGINT" property="updatedAt" />
+    <result column="shard_index" jdbcType="INTEGER" property="shardIndex" />
+    <result column="shard_size" jdbcType="INTEGER" property="shardSize" />
+    <result column="shard_total" jdbcType="INTEGER" property="shardTotal" />
+    <result column="file_key" jdbcType="VARCHAR" property="fileKey" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `path`, `name`, suffix, `size`, `user`, created_at, updated_at, shard_index, 
+    shard_size, shard_total, file_key
+  </sql>
+</mapper>

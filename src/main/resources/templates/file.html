@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="/md5.js"></script>
+<script type="text/javascript" src="/tool.js"></script>
+<script type="text/javascript">
+   //上传文件的话  得 单独出来
+   function test1(shardIndex) {
+       console.log(shardIndex);
+       //永安里from表单提交
+       var fd = new FormData();
+       //获取表单中的file
+       var file=$('#inputfile').get(0).files[0];
+       //文件分片  以20MB去分片
+       var shardSize = 20 * 1024 * 1024;
+       //定义分片索引
+       var shardIndex = shardIndex;
+       //定义分片的起始位置
+       var start = (shardIndex-1) * shardSize;
+       //定义分片结束的位置  file哪里来的?
+       var end = Math.min(file.size,start + shardSize);
+       //从文件中截取当前的分片数据
+       var fileShard = file.slice(start,end);
+       //分片的大小
+       var size = file.size;
+       //总片数
+       var shardTotal = Math.ceil(size / shardSize);
+       //文件的后缀名
+       var fileName = file.name;
+       var suffix = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length).toLowerCase();
+       //把视频的信息存储为一个字符串
+       var filedetails=file.name+file.size+file.type+file.lastModifiedDate;
+       //使用当前文件的信息用md5加密生成一个key 这个加密是根据文件的信息来加密的  如果相同的文件 加的密还是一样的
+       var key = hex_md5(filedetails);
+       var key10 = parseInt(key,16);
+       //把加密的信息 转为一个64位的
+       var key62 = Tool._10to62(key10);
+       //前面的参数必须和controller层定义的一样
+       fd.append('file',fileShard);
+       fd.append('suffix',suffix);
+       fd.append('shardIndex',shardIndex);
+       fd.append('shardSize',shardSize);
+       fd.append('shardTotal',shardTotal);
+       fd.append('size',size);
+       fd.append("key",key62)
+       $.ajax({
+           url:"/file/upload",
+           type:"post",
+           cache: false,
+           data:fd,
+           processData: false,
+           contentType: false,
+           success:function(data){
+               //这里应该是一个递归调用
+               if(shardIndex < shardTotal){
+                   var index=shardIndex +1;
+                   test1(index);
+               }else
+               {
+                   alert(data)
+               }
+
+           },
+           error:function(){
+               //请求出错处理
+           }
+       })
+       //发送ajax请求把参数传递到后台里面
+   }
+
+   //判断这个加密文件存在不存在
+   function check() {
+       var file=$('#inputfile').get(0).files[0];
+       //把视频的信息存储为一个字符串
+       var filedetails=file.name+file.size+file.type+file.lastModifiedDate;
+       //使用当前文件的信息用md5加密生成一个key 这个加密是根据文件的信息来加密的  如果相同的文件 加的密还是一样的
+       var key = hex_md5(filedetails);
+       var key10 = parseInt(key,16);
+       //把加密的信息 转为一个64位的
+       var key62 = Tool._10to62(key10);
+       //检查这个key存在不存在
+       $.ajax({
+           url:"/file/check",
+           type:"post",
+           data:{'key':key62},
+           success:function (data) {
+               console.log(data);
+               if(data.code==500){
+                   //这个方法必须抽离出来
+                   test1(1);
+               }
+               else
+               {
+                   if(data.data.shardIndex == data.data.shardTotal)
+                   {
+                       alert("极速上传成功");
+                   }else
+                   {
+                       //找到这个是第几片 去重新上传
+                       test1(parseInt(data.data.shardIndex));
+                   }
+               }
+           }
+       })
+   }
+
+</script>
+<body>
+    <table border="1px solid red">
+        <tr>
+            <td>文件1</td>
+            <td>
+                <input name="file" type="file" id="inputfile"/>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <button onclick="check()">提交</button>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
