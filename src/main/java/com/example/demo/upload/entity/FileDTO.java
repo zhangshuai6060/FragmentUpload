@@ -33,7 +33,7 @@ public class FileDTO {
     /**
     * 大小|字节B
     */
-    private Integer size;
+    private Long size;
 
 
     /**
@@ -49,17 +49,17 @@ public class FileDTO {
     /**
     * 已上传分片
     */
-    private Integer shardIndex;
+    private Long shardIndex;
 
     /**
     * 分片大小|B
     */
-    private Integer shardSize;
+    private Long shardSize;
 
     /**
     * 分片总数
     */
-    private Integer shardTotal;
+    private Long shardTotal;
 
     /**
     * 文件标识

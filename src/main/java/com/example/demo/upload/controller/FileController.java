@@ -53,10 +53,10 @@ public class FileController {
     @ResponseBody
     public String upload(MultipartFile file,
                          String suffix,
-                         Integer shardIndex,
-                         Integer shardSize,
-                         Integer shardTotal,
-                         Integer size,
+                         Long shardIndex,
+                         Long shardSize,
+                         Long shardTotal,
+                         Long size,
                          String key
                          ) throws IOException, InterruptedException {
         log.info("上传文件开始");
@@ -123,7 +123,7 @@ public class FileController {
         String path = fileDTO.getPath(); //获取到的路径 没有.1 .2 这样的东西
         //截取视频所在的路径
         path = path.replace(basePath,"");
-        Integer shardTotal= fileDTO.getShardTotal();
+        Long shardTotal= fileDTO.getShardTotal();
         File newFile = new File(basePath + path);
         FileOutputStream outputStream = new FileOutputStream(newFile,true); // 文件追加写入
         FileInputStream fileInputStream = null; //分片文件
